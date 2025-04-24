@@ -1,6 +1,7 @@
+#include "../include/worker.hpp"
+
 #include "../include/safe_queue.hpp"
 #include "../include/thread_pool.hpp"
-#include "../include/worker.hpp"
 
 #include <atomic>
 #include <functional>

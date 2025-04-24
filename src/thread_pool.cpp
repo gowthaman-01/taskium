@@ -1,11 +1,10 @@
-#include "../include/safe_queue.hpp"
 #include "../include/thread_pool.hpp"
+
+#include "../include/safe_queue.hpp"
 #include "../include/worker.hpp"
 
-#include <atomic>
 #include <functional>
 #include <memory>
-#include <vector>
 
 using Taskium::ThreadPool;
 using Taskium::Worker;

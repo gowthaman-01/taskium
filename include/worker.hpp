@@ -1,10 +1,10 @@
 #pragma once
 
+#include "safe_queue.hpp"
+
 #include <atomic>
 #include <functional>
 #include <thread>
-
-#include "safe_queue.hpp"
 
 namespace Taskium {
 
