@@ -10,7 +10,7 @@ namespace Taskium {
 template <typename T>
 class SafeQueue {
 private:
-    std::queue<T> q_;
+    std::queue<T> queue_;
     std::mutex m_;
     std::condition_variable cv_;
     
@@ -34,7 +34,7 @@ public:
      * @param value Reference where the popped element will be stored.
      * @return true if an element was popped, false if the queue was empty.
      */
-    bool try_pop(T& value);
+    [[nodiscard]] bool try_pop(T& value);
     
     /**
      * @brief Checks if the queue is empty in a thread-safe manner.
@@ -44,7 +44,7 @@ public:
      *
      * @return true if the queue is empty, false otherwise.
      */
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
 
     /**
      * @brief Checks if the queue is empty without acquiring the mutex.
@@ -55,41 +55,41 @@ public:
      *
      * @return true if the queue is empty, false otherwise.
      */
-    bool unsafe_empty() const;
+    [[nodiscard]] bool unsafe_empty() const;
     
     // Getters
-    std::mutex& get_mutex();
-    std::condition_variable& get_cv();
+    [[nodiscard]] std::mutex& get_mutex();
+    [[nodiscard]] std::condition_variable& get_cv();
 };
 
 template <typename T>
 void SafeQueue<T>::push(T value) {
     std::lock_guard<std::mutex> lock(m_);
-    q_.push(value);
+    queue_.push(value);
     cv_.notify_one();
 }
 
 template <typename T>
 bool SafeQueue<T>::try_pop(T &value) {
     std::lock_guard<std::mutex> lock(m_);
-    if (q_.empty()) {
+    if (queue_.empty()) {
         return false;
     }
     
-    value = q_.front();
-    q_.pop();
+    value = queue_.front();
+    queue_.pop();
     return true;
 }
 
 template <typename T>
 bool SafeQueue<T>::empty() const {
     std::lock_guard<std::mutex> lock(m_);
-    return q_.empty();
+    return queue_.empty();
 }
 
 template <typename T>
 bool SafeQueue<T>::unsafe_empty() const {
-    return q_.empty();
+    return queue_.empty();
 }
 
 
