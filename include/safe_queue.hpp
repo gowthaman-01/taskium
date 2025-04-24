@@ -1,8 +1,11 @@
+#pragma once
+
+#include <atomic>
 #include <condition_variable>
 #include <mutex>
 #include <queue>
 
-namespace gstd {
+namespace Taskium {
 
 template <typename T>
 class SafeQueue {
@@ -23,20 +26,9 @@ public:
     void push(T value);
     
     /**
-     * @brief Waits until the queue is non-empty and pops the front element.
-     *
-     * This function blocks the calling thread if the queue is empty,
-     * waking up when an item becomes available. The popped element
-     * is assigned to the provided reference.
-     *
-     * @param value Reference where the popped element will be stored.
-     */
-    void wait_and_pop(T& value);
-    
-    /**
      * @brief Attempts to pop the front element without blocking.
      *
-     * If the queue is empty, returns false immediately without blocking.
+     * If the queue is empty, returns false immediately.
      * Else pops the front element and assigns it to the provided reference.
      *
      * @param value Reference where the popped element will be stored.
@@ -44,7 +36,30 @@ public:
      */
     bool try_pop(T& value);
     
+    /**
+     * @brief Checks if the queue is empty in a thread-safe manner.
+     *
+     * Acquires the internal mutex before accessing the underlying queue.
+     * Safe to call from any thread at any time.
+     *
+     * @return true if the queue is empty, false otherwise.
+     */
     bool empty() const;
+
+    /**
+     * @brief Checks if the queue is empty without acquiring the mutex.
+     *
+     * Assumes the caller has already locked the queue’s mutex externally.
+     * Use with caution: only call this when the mutex is already held,
+     * such as inside a condition variable wait predicate.
+     *
+     * @return true if the queue is empty, false otherwise.
+     */
+    bool unsafe_empty() const;
+    
+    // Getters
+    std::mutex& get_mutex();
+    std::condition_variable& get_cv();
 };
 
 template <typename T>
@@ -52,15 +67,6 @@ void SafeQueue<T>::push(T value) {
     std::lock_guard<std::mutex> lock(m_);
     q_.push(value);
     cv_.notify_one();
-}
-
-template <typename T>
-void SafeQueue<T>::wait_and_pop(T& value) {
-    std::unique_lock<std::mutex> lock(m_);
-    cv_.wait(lock, [this]() { return !q_.empty(); });
-    
-    value = q_.front();
-    q_.pop();
 }
 
 template <typename T>
@@ -81,4 +87,20 @@ bool SafeQueue<T>::empty() const {
     return q_.empty();
 }
 
-} // namespace gstd
+template <typename T>
+bool SafeQueue<T>::unsafe_empty() const {
+    return q_.empty();
+}
+
+
+template <typename T>
+std::mutex& SafeQueue<T>::get_mutex() {
+    return m_;
+}
+
+template <typename T>
+std::condition_variable& SafeQueue<T>::get_cv() {
+    return cv_;
+}
+
+} // namespace Taskium
