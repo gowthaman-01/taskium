@@ -21,7 +21,7 @@ double run_pi_estimation(ThreadPool& thread_pool, int thread_count, int points) 
                 + std::to_string(thread_count)
                 + " threads and "
                 + std::to_string(points)
-                + " points per thread");
+                + " points per thread\n");
     
     auto futures = submit_pi_tasks(thread_pool, thread_count, points);
     return aggregate_pi_results(futures, thread_count, points);
@@ -51,7 +51,7 @@ std::vector<std::future<int>> submit_pi_tasks(ThreadPool& thread_pool, int threa
 void pi_task(int id, int points, std::promise<int> promise) {
     std::ostringstream oss;
     
-    oss << "[THREAD " << std::this_thread::get_id() << "] task " << id << " started with " << points << " points";
+    oss << "[THREAD " << std::this_thread::get_id() << "] task " << id << " started";
     logger.info(oss.str());
     
     // Mersenne Twister RNG
@@ -77,7 +77,7 @@ void pi_task(int id, int points, std::promise<int> promise) {
     oss.str("");
     oss.clear();
     
-    oss << "[THREAD " << std::this_thread::get_id() << "] task " << id << " completed: in_circle = " << in_circle;
+    oss << "[THREAD " << std::this_thread::get_id() << "] task " << id << " completed";
     logger.info(oss.str());
 }
 
