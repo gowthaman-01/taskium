@@ -82,8 +82,6 @@ void pi_task(int id, int points, std::promise<int> promise) {
 }
 
 double aggregate_pi_results(std::vector<std::future<int>>& futures, int thread_count, int points) {
-    logger.info("aggregating results from all threads");
-    
     double total_points = points * thread_count;
     double total_in_circle = 0;
     
