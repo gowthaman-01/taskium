@@ -12,7 +12,7 @@ It features lock-based scheduling, mutex-guarded queues, and condition-variable 
 - **Thread-safe logging** with log levels (`INFO`, `ERROR`, `RESULT`) for clean output.
 
 
-## 🛠 Build Instructions
+## Build Instructions
 
 1. Install CMake (if not already installed)
 
