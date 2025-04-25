@@ -22,9 +22,9 @@ void Worker::loop(SafeQueue<std::function<void()>>& safe_queue, std::atomic<bool
     auto& m = safe_queue.get_mutex();
     auto& cv = safe_queue.get_cv();
     
-    std::unique_lock<std::mutex> lock(m);
-    
     while (true) {
+        std::unique_lock<std::mutex> lock(m);
+        
         // Wait until there is work or shutdown signal
         cv.wait(lock, [&stop_flag, &safe_queue]() { return stop_flag || !safe_queue.unsafe_empty(); });
         
@@ -34,7 +34,7 @@ void Worker::loop(SafeQueue<std::function<void()>>& safe_queue, std::atomic<bool
         }
         
         std::function<void()> task;
-        bool task_acquired = safe_queue.try_pop(task);
+        bool task_acquired = safe_queue.unsafe_try_pop(task);
         if (!task_acquired) {
             continue;
         }
