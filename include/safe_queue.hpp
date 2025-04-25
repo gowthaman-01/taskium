@@ -36,6 +36,18 @@ public:
     [[nodiscard]] bool try_pop(T& value);
     
     /**
+     * @brief Pops the front element without locking.
+     *
+     * This method assumes the caller already holds the mutex.
+     * If the queue is empty, returns false immediately.
+     * Else pops the front element and assigns it to the provided reference.
+     *
+     * @param value Reference where the popped element will be stored.
+     * @return true if an element was popped, false if the queue was empty.
+     */
+    [[nodiscard]] bool unsafe_try_pop(T& value);
+    
+    /**
      * @brief Checks if the queue is empty in a thread-safe manner.
      *
      * Acquires the internal mutex before accessing the underlying queue.
@@ -71,6 +83,11 @@ void SafeQueue<T>::push(T value) {
 template <typename T>
 bool SafeQueue<T>::try_pop(T &value) {
     std::lock_guard<std::mutex> lock(m_);
+    return unsafe_try_pop(value);
+}
+
+template <typename T>
+bool SafeQueue<T>::unsafe_try_pop(T &value) {
     if (queue_.empty()) {
         return false;
     }
