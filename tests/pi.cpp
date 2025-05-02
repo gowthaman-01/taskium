@@ -4,11 +4,10 @@
 #include "../include/thread_pool.hpp"
 
 #include <future>
-#include <iostream>
 #include <random>
-#include <thread>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
 
 using Taskium::Logger;

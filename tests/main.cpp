@@ -4,13 +4,6 @@
 #include "../core/logger.hpp"
 #include "../include/thread_pool.hpp"
 
-#include <iostream>
-#include <memory>
-#include <thread>
-#include <string>
-#include <utility>
-#include <vector>
-
 using Taskium::Logger;
 using Taskium::ThreadPool;
 
