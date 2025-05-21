@@ -30,24 +30,24 @@ std::vector<std::future<int>> submit_pi_tasks(ThreadPool& thread_pool, int threa
     std::vector<std::future<int>> futures;
     
     for (int i = 0; i < thread_count; ++i) {
-        // Create a promise-future pair for each task
+        // Use shared_ptr instead of unique_ptr for the promise because lambdas that capture unique_ptr by move become move-only.
+        // std::function<void()> requires the lambda to be copyable, so using shared_ptr ensures the lambda remains copyable.
         auto promise_ptr = std::make_shared<std::promise<int>>();
         std::future<int> future = promise_ptr->get_future();
-        
         futures.push_back(std::move(future));
         
         logger.info("submitted pi estimation task "
                     + std::to_string(i));
         
         thread_pool.submit([i, points, promise_ptr]() {
-            pi_task(i, points, std::move(*promise_ptr));
+            pi_task(i, points, promise_ptr);
         });
     }
     
     return futures;
 }
 
-void pi_task(int id, int points, std::promise<int> promise) {
+void pi_task(int id, int points, std::shared_ptr<std::promise<int>> promise) {
     std::ostringstream oss;
     
     oss << "[THREAD " << std::this_thread::get_id() << "] task " << id << " started";
@@ -70,7 +70,7 @@ void pi_task(int id, int points, std::promise<int> promise) {
         }
     }
     
-    promise.set_value(in_circle);
+    promise->set_value(in_circle);
     
     // Clear stream before reuse
     oss.str("");
@@ -89,6 +89,8 @@ double aggregate_pi_results(std::vector<std::future<int>>& futures, int thread_c
         total_in_circle += in_circle;
     }
 
+    // Estimate π using the ratio of points inside the quarter-circle to total points
+    // Scaled by 4 since quarter-circle area is π/4
     double pi_estimate = total_in_circle / total_points * 4.0;
     
     logger.general("\n[RESULT] estimated pi = "

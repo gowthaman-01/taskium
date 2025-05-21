@@ -2,6 +2,7 @@
 
 #include "../include/thread_pool.hpp"
 
+#include <memory>
 #include <future>
 
 using Taskium::ThreadPool;
@@ -36,7 +37,7 @@ std::vector<std::future<int>> submit_pi_tasks(ThreadPool& thread_pool, int threa
  * @param points Number of random points to generate.
  * @param promise Promise used to set the in-circle count result.
  */
-void pi_task(int id, int points, std::promise<int> promise);
+void pi_task(int id, int points, std::shared_ptr<std::promise<int>> promise);
 
 /**
  * @brief Aggregates results from all futures and computes the Pi estimate.
