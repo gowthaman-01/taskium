@@ -14,6 +14,7 @@ class ThreadPool {
 private:
     SafeQueue<std::function<void()>> safe_queue_;
     std::atomic<bool> stop_flag_;
+    // Workers are stored as unique_ptrs because std::vector::push_back requires movable elements.
     std::vector<std::unique_ptr<Worker>> workers_;
 
 public:

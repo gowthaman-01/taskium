@@ -9,6 +9,7 @@
 
 using Taskium::Worker;
 
+// Note: `&Worker::loop` is a pointer to a non-static member function, so `this` is needed as the object context.
 Worker::Worker(SafeQueue<std::function<void()>>& safe_queue, std::atomic<bool>& stop_flag)
     : t_(&Worker::loop, this, std::ref(safe_queue), std::ref(stop_flag)) {}
 
@@ -38,7 +39,8 @@ void Worker::loop(SafeQueue<std::function<void()>>& safe_queue, std::atomic<bool
         if (!task_acquired) {
             continue;
         }
-
+        
+        // Unlock the mutex before executing the task to avoid blocking other threads.
         lock.unlock();
         task();
         lock.lock();

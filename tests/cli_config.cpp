@@ -8,8 +8,8 @@
 
 std::pair<int, int> get_params(int argc, const char* argv[]) {
     // Default values
-    int thread_count = std::thread::hardware_concurrency(); // Dynamically detects number of CPU cores
-    int points = default_points;                            // 10 million
+    int thread_count = std::thread::hardware_concurrency();     // Dynamically detects number of CPU cores
+    int points = default_point_count;                           // 10 million
     
     // CLI overrides
     try {
