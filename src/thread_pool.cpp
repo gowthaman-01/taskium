@@ -18,7 +18,6 @@ ThreadPool::ThreadPool(size_t N) : safe_queue_(), stop_flag_(false) {
 
 void ThreadPool::submit(std::function<void ()> task) {
     safe_queue_.push(task);
-    safe_queue_.get_cv().notify_one();
 }
 
 void ThreadPool::shutdown() {
