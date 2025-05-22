@@ -1,6 +1,8 @@
 
 # Taskium: Thread Pool Scheduler
 
+![Taskium](https://github.com/user-attachments/assets/0846937c-28b1-46b0-8323-49d6afaccc66)
+
 Taskium is a modern C++ thread pool framework designed to manage concurrent task execution.
 It features lock-based scheduling, mutex-guarded queues, and condition-variable signaling to ensure safe, efficient task dispatch across multiple worker threads.
 
